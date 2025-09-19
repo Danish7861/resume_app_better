@@ -4,10 +4,6 @@ from main_functions import helper
 import json
 st.title("Upload your cv")
 
-
-
-
-
 if "cv_text" in st.session_state and "jd_text" in st.session_state and "fixed_cv" in st.session_state:
     my_original_score = helper.ats_score_check_optimized(st.session_state["cv_text"], st.session_state["jd_text"])
     my_optimized_score = helper.ats_score_check_optimized(st.session_state["fixed_cv"], st.session_state["jd_text"])
