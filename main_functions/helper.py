@@ -10,8 +10,15 @@ import json
 # Load environment variables
 load_dotenv()
 
-# Get API key from .env
-api_key = st.secrets["OPENAI_API_KEY"]
+try:
+    # Try Streamlit secrets first
+    api_key = st.secrets["OPENAI_API_KEY"]
+except Exception:
+    # Fallback to .env
+    api_key = os.getenv("OPENAI_API_KEY")
+
+if not api_key:
+    st.error("API key not found. Please check your .env or Streamlit secrets.")
 
 # Initialize OpenAI client
 client = OpenAI(api_key=api_key)
