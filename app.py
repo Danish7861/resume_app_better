@@ -139,8 +139,18 @@ def cv_suggestions(cv_text, jd_text):
 
 def interview_questions(cv_text, jd_text):
     prompt = f"""
-    Create 5 interview questions based on the CV and job description.
-    Emphasize key skills and experiences.
+    You are an expert interviewer and career coach. 
+
+    Task:
+    - Create 5 interview questions based on the CV and Job Description provided.  
+    - Focus on the most relevant skills, experiences, and responsibilities.  
+    - For each question, also provide a detailed step-by-step sample answer that a strong candidate would give.
+
+    Format your response as:
+    1. Question
+    - Why this question is important (tie it to CV or JD).
+    - Step-by-step sample answer (numbered list).
+    - Key points to highlight.
 
     CV:
     {cv_text}
