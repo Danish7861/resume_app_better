@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 streamlit
 openai
 python-dotenv
 python-docx
 pypdf
+=======
+streamlit
+openai
+python-dotenv
+python-docx
+pypdf
+>>>>>>> 53f2668ba3bf17bea8b93d42ff9993006a06ac5d
 streamlit-extras
