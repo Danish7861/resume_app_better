@@ -30,6 +30,18 @@ client = OpenAI(api_key=api_key)
 # ============================================================
 # Helper Functions
 # ============================================================
+
+def show_pdf(file):
+    # Always reset the pointer before reading
+    file.seek(0)
+    base64_pdf = base64.b64encode(file.read()).decode("utf-8")
+    pdf_display = f"""
+    <iframe src="data:application/pdf;base64,{base64_pdf}" 
+            width="100%" height="500" 
+            type="application/pdf"></iframe>
+    """
+    st.markdown(pdf_display, unsafe_allow_html=True)
+
 def extract_pdf_text(file):
     try:
         reader = PdfReader(file)
@@ -178,10 +190,13 @@ with col1:
     if cv_file:
         cv_text = extract_pdf_text(cv_file)
         st.session_state["cv_text"] = cv_text
-        cv_file.seek(0)
-        base64_pdf = base64.b64encode(cv_file.read()).decode("utf-8")
-        pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="400"></iframe>'
-        st.markdown(pdf_display, unsafe_allow_html=True)
+        # cv_file.seek(0)
+        # base64_pdf = base64.b64encode(cv_file.read()).decode("utf-8")
+        # pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="400"></iframe>'
+        # st.markdown(pdf_display, unsafe_allow_html=True)
+        show_pdf(cv_file)
+
+
 
 with col2:
     jd_file = st.file_uploader("📋 Upload Job Description (TXT/DOCX)", type=["txt", "docx"])
