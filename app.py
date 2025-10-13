@@ -42,16 +42,22 @@ client = OpenAI(api_key=api_key)
 #     """
 #     st.markdown(pdf_display, unsafe_allow_html=True)
 
+# def show_pdf(file):
+#     file.seek(0)
+#     pdf_bytes = file.read()
+#     st.download_button(
+#         label="📥 Download or Open PDF",
+#         data=pdf_bytes,
+#         file_name=file.name,
+#         mime="application/pdf"
+#     )
+#     st.success("✅ PDF uploaded successfully. Click above to open in a new tab.")
+
 def show_pdf(file):
     file.seek(0)
-    pdf_bytes = file.read()
-    st.download_button(
-        label="📥 Download or Open PDF",
-        data=pdf_bytes,
-        file_name=file.name,
-        mime="application/pdf"
-    )
-    st.success("✅ PDF uploaded successfully. Click above to open in a new tab.")
+    st.write("📄 PDF Preview:")
+    st.pdf(file)
+
 
 
 def extract_pdf_text(file):
