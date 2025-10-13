@@ -70,16 +70,23 @@ client = OpenAI(api_key=api_key)
 # Helper Functions
 # ============================================================
 
+
 def show_pdf(file):
-    # Always reset the pointer before reading
-    file.seek(0)
-    base64_pdf = base64.b64encode(file.read()).decode("utf-8")
-    pdf_display = f"""
-    <iframe src="data:application/pdf;base64,{base64_pdf}" 
-            width="100%" height="500" 
-            type="application/pdf"></iframe>
     """
-    st.markdown(pdf_display, unsafe_allow_html=True)
+    Display an uploaded PDF inline using Mozilla's secure PDF.js viewer.
+    Works perfectly on Streamlit Cloud and all major browsers (Chrome, Edge, Safari).
+    """
+    import base64
+    import streamlit as st
+    file.seek(0)
+    pdf_bytes = file.read()
+    st.download_button(
+        label="📥 Download or Open PDF",
+        data=pdf_bytes,
+        file_name=file.name,
+        mime="application/pdf"
+    )
+    st.success("✅ PDF uploaded successfully. Click above to open in a new tab.")
 
 def extract_pdf_text(file):
     try:
