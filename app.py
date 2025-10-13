@@ -54,18 +54,17 @@ client = OpenAI(api_key=api_key)
 #     st.success("✅ PDF uploaded successfully. Click above to open in a new tab.")
 
 def show_pdf(file):
-    import tempfile
-    import pathlib
+    file.seek(0)
+    pdf_bytes = file.read()
+    base64_pdf = base64.b64encode(pdf_bytes).decode("utf-8")
 
-    # Save uploaded file temporarily
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
-        tmp_file.write(file.read())
-        tmp_path = pathlib.Path(tmp_file.name)
-
-    # Create a file URL that Streamlit can safely load
     pdf_display = f"""
-        <iframe src="https://docs.google.com/gview?embedded=true&url=file://{tmp_path}" 
-                width="100%" height="500px"></iframe>
+    <iframe
+        src="data:application/pdf;base64,{base64_pdf}#toolbar=0"
+        width="100%"
+        height="600"
+        style="border:none;"
+    ></iframe>
     """
     st.markdown(pdf_display, unsafe_allow_html=True)
 
