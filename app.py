@@ -54,18 +54,29 @@ client = OpenAI(api_key=api_key)
 #     st.success("✅ PDF uploaded successfully. Click above to open in a new tab.")
 
 def show_pdf(file):
+    import tempfile, os, base64
+
     file.seek(0)
     pdf_bytes = file.read()
-    base64_pdf = base64.b64encode(pdf_bytes).decode("utf-8")
 
+    # Save to a temporary file
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
+        tmp_file.write(pdf_bytes)
+        tmp_path = tmp_file.name
+
+    # Encode local path to Base64 for Streamlit serving
+    encoded = base64.b64encode(pdf_bytes).decode("utf-8")
+
+    # Use pdf.js-style embedding (safe and Chrome-compatible)
     pdf_display = f"""
     <iframe
-        src="data:application/pdf;base64,{base64_pdf}#toolbar=0"
+        src="https://mozilla.github.io/pdf.js/web/viewer.html?file=data:application/pdf;base64,{encoded}"
         width="100%"
         height="600"
         style="border:none;"
     ></iframe>
     """
+
     st.markdown(pdf_display, unsafe_allow_html=True)
 
 
