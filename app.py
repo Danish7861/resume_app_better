@@ -1,3 +1,4 @@
+# import streamlit as st
 import base64
 import os
 import json
@@ -30,42 +31,32 @@ client = OpenAI(api_key=api_key)
 # Helper Functions
 # ============================================================
 
+# def show_pdf(file):
+#     # Always reset the pointer before reading
+#     file.seek(0)
+#     base64_pdf = base64.b64encode(file.read()).decode("utf-8")
+#     pdf_display = f"""
+#     <iframe src="data:application/pdf;base64,{base64_pdf}" 
+#             width="100%" height="500" 
+#             type="application/pdf"></iframe>
+#     """
+#     st.markdown(pdf_display, unsafe_allow_html=True)
+
 def show_pdf(file):
-    """
-    Display an uploaded PDF inline using Mozilla's secure PDF.js viewer.
-    Works perfectly on Streamlit Cloud and all major browsers (Chrome, Edge, Safari).
-    """
-    import base64
-    import streamlit as st
+    file.seek(0)
+    pdf_bytes = file.read()
+    st.download_button(
+        label="📥 Download or Open PDF",
+        data=pdf_bytes,
+        file_name=file.name,
+        mime="application/pdf"
+    )
+    st.success("✅ PDF uploaded successfully. Click above to open in a new tab.")
 
-    try:
-        # Reset pointer and read PDF bytes
-        file.seek(0)
-        pdf_bytes = file.read()
 
-        # Convert PDF to base64
-        base64_pdf = base64.b64encode(pdf_bytes).decode("utf-8")
 
-        # Embed in Mozilla's PDF.js viewer
-        pdf_viewer_url = (
-            f"https://mozilla.github.io/pdf.js/web/viewer.html?"
-            f"file=data:application/pdf;base64,{base64_pdf}"
-        )
 
-        # Render inline
-        st.markdown(
-            f"""
-            <iframe
-                src="{pdf_viewer_url}"
-                width="100%"
-                height="700"
-                style="border:none; border-radius:10px;"
-            ></iframe>
-            """,
-            unsafe_allow_html=True
-        )
-    except Exception as e:
-        st.error(f"⚠️ Error displaying PDF: {e}")
+
 
 
 def extract_pdf_text(file):
@@ -76,7 +67,6 @@ def extract_pdf_text(file):
     except Exception:
         return ""
 
-
 def extract_docx_text(file):
     try:
         doc = docx.Document(file)
@@ -84,6 +74,7 @@ def extract_docx_text(file):
     except Exception:
         return ""
 
+import re
 
 def ats_score(cv_text, jd_text):
     prompt = f"""
@@ -109,9 +100,12 @@ def ats_score(cv_text, jd_text):
     )
 
     result = response.choices[0].message.content.strip()
+
+    # Try parsing JSON directly
     try:
         return float(json.loads(result)["ats_score"])
     except:
+        # Fallback: extract number using regex
         match = re.search(r"(\d+)", result)
         if match:
             return float(match.group(1))
@@ -137,7 +131,6 @@ def fix_cv(cv_text, jd_text):
     )
     return response.choices[0].message.content.strip()
 
-
 def generate_cover_letter(cv_text, jd_text):
     prompt = f"""
     Write a tailored professional cover letter based on the CV and job description.
@@ -154,7 +147,6 @@ def generate_cover_letter(cv_text, jd_text):
         temperature=0.5
     )
     return response.choices[0].message.content.strip()
-
 
 def cv_suggestions(cv_text, jd_text):
     prompt = f"""
@@ -173,7 +165,6 @@ def cv_suggestions(cv_text, jd_text):
         temperature=0.5
     )
     return response.choices[0].message.content.strip()
-
 
 def interview_questions(cv_text, jd_text):
     prompt = f"""
@@ -203,7 +194,6 @@ def interview_questions(cv_text, jd_text):
     )
     return response.choices[0].message.content.strip()
 
-
 # ============================================================
 # UI
 # ============================================================
@@ -217,7 +207,13 @@ with col1:
     if cv_file:
         cv_text = extract_pdf_text(cv_file)
         st.session_state["cv_text"] = cv_text
+        # cv_file.seek(0)
+        # base64_pdf = base64.b64encode(cv_file.read()).decode("utf-8")
+        # pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="400"></iframe>'
+        # st.markdown(pdf_display, unsafe_allow_html=True)
         show_pdf(cv_file)
+
+
 
 with col2:
     jd_file = st.file_uploader("📋 Upload Job Description (TXT/DOCX)", type=["txt", "docx"])
